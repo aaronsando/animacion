@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Canvas</title>
+	<style type="text/css">
+		canvas{
+			background-color: rgb(135, 135, 210);
+		}
+	</style>
+</head>
+<body>
+    
+	<canvas id="canvas" width="500" height="500"></canvas>
+
+	<script type="text/javascript">
+		var cv = null;
+		var ctx = null;
+        var press = 'false';
+        var sup_x = 0, sup_y = 0;
+
+        function run(){
+        
+            cv = document.getElementById('canvas');
+            ctx = cv.getContext('2d');
+
+            paint();
+
+        }
+
+        function paint(){
+
+            window.requestAnimationFrame(paint);
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(0,0,500,500);
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(sup_x, sup_y, 40,40);
+            ctx.strokeRect(sup_x, sup_y, 40,40);
+
+            sup_x += 5;
+
+            if(sup_x>500){
+                sup_x = 0;
+            }
+
+        }
+
+
+            window.requestAnimationFrame = (function () {
+            return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+             function (callback) {
+                window.setTimeout(callback, 17);
+             };
+            }());
+
+            window.addEventListener('load',run, false);
+
+
+            
+
+        </script>
+
+</body>
+</html>
