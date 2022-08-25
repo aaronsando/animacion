@@ -18,12 +18,25 @@
 		var cv = null;
 		var ctx = null;
         var press = 'false';
-        var sup_x = 0, sup_y = 0;
+        var direccion = 'right';
+        var player = null;
+        var player2 = null;
+        var score = 0;
+        var speed = 5;
+        var pause = false;
+        var wall = [4];
 
         function run(){
         
             cv = document.getElementById('canvas');
             ctx = cv.getContext('2d');
+            player = new cuadro(100,100,30,30,'red');
+            player2 = new cuadro(random(400), random(400), 40, 40, "red");
+
+            wall[1] = new cuadro(50,100,30,300,"black");
+            wall[2] = new cuadro(400,100,30,300,"black");
+            wall[3] = new cuadro(190,100,100,30,"black");
+            wall[4 ] = new cuadro(190,370,100,30,"black");
 
             paint();
 
@@ -32,17 +45,149 @@
         function paint(){
 
             window.requestAnimationFrame(paint);
-            ctx.fillStyle = 'blue';
+            ctx.fillStyle = randomColor(); 
             ctx.fillRect(0,0,500,500);
 
-            ctx.fillStyle = 'red';
-            ctx.fillRect(sup_x, sup_y, 40,40);
-            ctx.strokeRect(sup_x, sup_y, 40,40);
+            ctx.fillStyle = "black";
+            ctx.fillText("Score:"+score,10,20);
 
-            sup_x += 5;
+            player.pintar(ctx);
+            player2.pintar(ctx);
 
-            if(sup_x>500){
-                sup_x = 0;
+            for(var x=0; x<wall.length; x++){
+                wall[x].pintar(ctx);
+
+            if(pause){
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0,0,500,500);
+
+                ctx.fillStyle = "white";
+                ctx.filText('PAUSE', 225, 225);
+            }else{
+                update();
+            }
+
+        }
+
+        function update(){
+
+                //arriba
+                if(direccion=='up'){
+                    player.y -= speed;
+                    if(player.y<0){
+                        player.y=500;
+                    }   
+                }
+
+                //abajo
+                if(direccion=='down'){
+                    player.y += speed;
+                    if(player.y>500){
+                        player.y=0;
+                    }  
+                }
+
+                //izquierda
+                if(direccion=='left'){
+                    player.x -= speed;
+                    if(player.x<0){
+                        player.x=500
+                    }  
+                }
+
+                //derecha
+                if(direccion=='right'){
+                    player.x += speed;
+                    if(player.x>500){
+                        player.x=0;
+                    }  
+                }
+
+                if(player.intersects(player2)){
+                    player2.x = random(500);
+                    player2.y = random(500);
+                    score += 1;
+                    velocidad += 2;
+                }
+
+                for(var x=0; x<wall.length; x++){
+                    if(player.intersects(wall[x])){
+                        if(direccion=='up'){
+                            player.y += velocidad;
+                        }
+                        if(direccion=='down'){
+                            player.y -= velocidad;
+                        }
+                        if(direccion=='right'){
+                            player.y -= velocidad;
+                        }
+                        if(direccion=='left'){
+                            player.y += velocidad;
+                        }
+                    }
+                }
+        }
+
+        document.addEventListener('keydown', function(e){
+
+        console.log(e);
+        //arriba
+        if(e.keyCode== 87 || e.keyCode==38){
+            direccion = 'up';
+        }
+
+        //abajo
+        if(e.keyCode== 83 || e.keyCode==40){
+            direccion = 'down';
+        }
+
+        //izquierda
+        if(e.keyCode== 65 || e.keyCode==37){
+            direccion = 'left';
+        }
+
+        //derecha
+        if(e.keyCode== 68 || e.keyCode==39){
+            direccion = 'right';
+        }
+
+        if(e.keyCode == 32){
+            pause=(pause)?false:true;
+        }
+
+        })
+
+
+        function cuadro(x,y,w,h,c){
+
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.c = c;
+
+            
+            this.intersects = function (target) { 
+
+                if(this.x < target.x + target.w &&
+
+                this.x + this.w > target.x && 
+
+                this.y < target.y + target.h && 
+
+                this.y + this.h > target.y)
+
+                {
+                    return true;	 
+                }  
+
+            };
+
+            this.pintar = function(ctx){
+                ctx.fillStyle = this.c;
+                ctx.fillRect(this.x,this.y,this.w,this.h);
+                ctx.strokeRect(this.x,this.x,this.w,this.h);
+
             }
 
         }
@@ -59,8 +204,13 @@
 
             window.addEventListener('load',run, false);
 
+            function random(number){
+                return Math.floor(Math.random()*number);
+            }
 
-            
+            function randomColor(){
+                return 'rgba('+random(255)+','+random(255)+','+random(255)+',';
+            }
 
         </script>
 
